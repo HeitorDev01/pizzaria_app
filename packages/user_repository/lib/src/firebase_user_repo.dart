@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:developer';
+import 'package:rxdart/rxdart.dart';
 import 'package:user_repository/src/user_repo.dart';
 import 'package:firebase_auth/firebase_auth.dart' ;
+import 'package:user_repository/user_repository.dart';
 
 class FirebaseUserRepo implements UserRepository {
   final FirebaseAuth _firebaseAuth;
@@ -8,17 +11,41 @@ class FirebaseUserRepo implements UserRepository {
   
   FirebaseUserRepo({FirebaseAuth? firebaseAuth})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
-      
+
         @override
-        Future<void> setUserData(user) {
-          // TODO: implement setUserData
-          throw UnimplementedError();
+        Stream<MyUser> get user {
+          return _firebaseAuth.authStateChanges().flatMap((firebaseUser) async* {
+            if (firebaseUser == null) {
+              yield MyUser.empty;
+              } else {
+               final usersCollection = FirebaseFirestore.instance.collection('users');
+              yield await usersCollection
+                .doc(firebaseUser.uid)
+                .get()
+                .then((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()!)));
+              }
+          });
+        }
+        @override
+        Future<void> signIn(String email, String password) async {
+          try{
+            await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+          } catch (e) {
+            log(e.toString());
+            rethrow;
+          }
         }
       
+
         @override
-        Future<void> signIn(String email, String password) {
-          // TODO: implement signIn
-          throw UnimplementedError();
+        Future<MyUser> signUp(MyUser myUser, String password) async {
+          try{
+            UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(email: myUser.email, password: password);
+            return myUser.copyWith(userId: user.user!.uid)  ;
+          } catch (e) {
+            log(e.toString());
+            rethrow;
+          }
         }
       
         @override
@@ -26,14 +53,16 @@ class FirebaseUserRepo implements UserRepository {
           // TODO: implement signOut
           throw UnimplementedError();
         }
-      
+
         @override
-        singUp(MyUser, String password) {
-          // TODO: implement singUp
+        Future<void> setUserData(user) {
+          // TODO: implement setUserData
           throw UnimplementedError();
         }
-      
-        @override
-        // TODO: implement user
-        get user => throw UnimplementedError();
+        
+          @override
+          Future<MyUser> singUp(MyUser, String password) {
+            // TODO: implement singUp
+            throw UnimplementedError();
+          }
   }

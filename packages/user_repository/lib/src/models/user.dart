@@ -1,3 +1,5 @@
+import 'package:user_repository/src/entities/entities.dart';
+
 class MyUser {
   final String userId;
   final String name;
@@ -17,6 +19,20 @@ class MyUser {
       email: '', 
       hasActivityCart: false, 
       );
+
+      MyUser copyWith({
+    String? userId,
+    String? name,
+    String? email,
+    bool? hasActivityCart,
+  }) {
+    return MyUser(
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      hasActivityCart: hasActivityCart ?? this.hasActivityCart,
+    );
+  }
   
   MyUserEntity toEntity() {
     return MyUserEntity(
