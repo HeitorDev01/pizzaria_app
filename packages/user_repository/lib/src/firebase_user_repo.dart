@@ -40,8 +40,14 @@ class FirebaseUserRepo implements UserRepository {
         @override
         Future<MyUser> signUp(MyUser myUser, String password) async {
           try{
-            UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(email: myUser.email, password: password);
-            return myUser.copyWith(userId: user.user!.uid)  ;
+            UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(
+              email: myUser.email, 
+              password: password
+              );
+
+            return myUser.copyWith(
+              userId: user.user!.uid
+              );
           } catch (e) {
             log(e.toString());
             rethrow;
@@ -49,20 +55,20 @@ class FirebaseUserRepo implements UserRepository {
         }
       
         @override
-        Future<void> signOut() {
-          // TODO: implement signOut
-          throw UnimplementedError();
+        Future<void> signOut() async {
+         await _firebaseAuth.signOut();
         }
 
         @override
-        Future<void> setUserData(user) {
-          // TODO: implement setUserData
-          throw UnimplementedError();
-        }
-        
-          @override
-          Future<MyUser> singUp(MyUser, String password) {
-            // TODO: implement singUp
-            throw UnimplementedError();
+        Future<void> setUserData(user) async {
+          try {
+            await userCollection
+            .doc(user.userId)
+            .set(user.toEntity().toDocument());
+          } catch (e) {
+            log(e.toString());
+            rethrow;
           }
-  }
+          
+        }
+}
