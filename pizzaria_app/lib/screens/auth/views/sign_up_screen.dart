@@ -1,7 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pizzaria_app/components/my_text_field.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../blocs/sign_up_bloc/sign_up_bloc.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -228,10 +231,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: TextButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          MyUser myUser = MyUser.empty;
-                          myUser.email = emailController.text;
-                          myUser.name = nameController.text;
-                          
+                         MyUser myUser = MyUser.empty.copyWith(
+                          email: emailController.text,
+                          name: nameController.text,
+                          );
+
                           setState(() {
                             context.read<SignUpBloc>().add(
                               SignUpRequired(

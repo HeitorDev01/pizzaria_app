@@ -1,7 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../blocs/authentication_bloc/authentication_bloc.dart';
+import '../../../blocs/authetication_bloc/authentication_bloc.dart';
+import '../blocs/sign_up_bloc/sign_up_bloc.dart';
+import '../blocs/sing_in_bloc/sign_in_bloc.dart';
+import 'sign_in_screen.dart';
+import 'sign_up_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

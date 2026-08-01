@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pizzaria_app/components/my_text_field.dart';
+
+import '../blocs/sing_in_bloc/sign_in_bloc.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -102,10 +105,11 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: TextButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        context.read<SignInBloc>().add(SignInRequired(
-                          emailController.text,
-                          passwordController.text)
-                        );
+                      context.read<SignInBloc>().add(SignInRequired(
+                      email: emailController.text,
+                      password: passwordController.text,
+                      ) // SignInRequired
+                      );    
                       }
                     },
                     style: TextButton.styleFrom(

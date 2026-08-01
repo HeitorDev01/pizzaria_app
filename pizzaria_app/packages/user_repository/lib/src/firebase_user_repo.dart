@@ -71,4 +71,10 @@ class FirebaseUserRepo implements UserRepository {
           }
           
         }
+        
+          @override
+          Future<void> logOut() {
+            // TODO: implement logOut
+            throw UnimplementedError();
+          }
 }
