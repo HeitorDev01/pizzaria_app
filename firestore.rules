@@ -1,0 +1,86 @@
+rules_version = '2';
+
+// Regras de seguranca do Firestore.
+// Modelo: negar tudo por padrao, liberar so o minimo necessario.
+// Essas regras rodam no servidor do Google - sao a UNICA barreira real
+// entre a base de clientes e a internet. O app cliente nao protege nada.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Nega tudo que nao for explicitamente liberado abaixo.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Dados pessoais do usuario (nome, email).
+    // Cada usuario so enxerga e edita o proprio documento.
+    match /users/{userId} {
+      allow read: if isDono(userId);
+
+      // Na criacao o userId do documento tem que bater com quem esta logado
+      // e o email tem que ser o email autenticado - impede um usuario
+      // cadastrar dados no lugar de outro.
+      allow create: if isDono(userId)
+                    && request.resource.data.userId == userId
+                    && request.resource.data.email == request.auth.token.email
+                    && camposValidos();
+
+      // Nao deixa trocar o dono nem o email por baixo dos panos.
+      allow update: if isDono(userId)
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.email == resource.data.email
+                    && camposValidos();
+
+      // Exclusao de conta e feita pelo proprio usuario (LGPD - direito
+      // de eliminacao). Se preferir centralizar, troque por 'if false'
+      // e faca via Cloud Function.
+      allow delete: if isDono(userId);
+    }
+
+    // Catalogo de pizzas: leitura publica, escrita so pelo painel admin
+    // (via Admin SDK, que ignora estas regras) ou por custom claim.
+    match /pizzas/{pizzaId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Pedidos: o cliente le e cria os proprios; nao pode alterar depois
+    // (senao mudaria preco/status do proprio pedido).
+    match /orders/{orderId} {
+      allow read: if isLogado() && resource.data.userId == request.auth.uid;
+      allow create: if isLogado() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- helpers ----------
+
+    function isLogado() {
+      return request.auth != null;
+    }
+
+    function isDono(userId) {
+      return isLogado() && request.auth.uid == userId;
+    }
+
+    // Exige custom claim 'admin' setada via Admin SDK.
+    // Nunca confie num campo 'isAdmin' guardado no documento do usuario:
+    // o proprio usuario conseguiria escrever nele.
+    function isAdmin() {
+      return isLogado() && request.auth.token.admin == true;
+    }
+
+    // Trava o formato do documento: impede injetar campos extras
+    // (ex: 'role', 'credito', 'desconto') que o app nao espera.
+    function camposValidos() {
+      return request.resource.data.keys().hasOnly(
+               ['userId', 'name', 'email', 'hasActivityCart']
+             )
+             && request.resource.data.name is string
+             && request.resource.data.name.size() > 0
+             && request.resource.data.name.size() <= 120
+             && request.resource.data.email is string
+             && request.resource.data.hasActivityCart is bool;
+    }
+  }
+}

@@ -43,3 +43,46 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ---------------------------------------------------------------
+# Segredos reais - NUNCA versionar
+# (as chaves do Firebase client NAO entram aqui: sao publicas por
+#  design. A protecao delas e feita via firestore.rules + App Check
+#  + restricao de chave no Google Cloud Console.)
+# ---------------------------------------------------------------
+
+# Variaveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Assinatura Android (da acesso a publicar em seu nome)
+*.jks
+*.keystore
+**/android/key.properties
+**/android/app/upload-keystore.jks
+
+# Credenciais de servidor Firebase / Google Cloud
+# (service account = acesso ADMIN, ignora todas as rules)
+*-service-account*.json
+serviceAccountKey*.json
+firebase-adminsdk-*.json
+.firebase/
+.firebaserc
+
+# Certificados e chaves privadas
+*.pem
+*.key
+*.p8
+*.p12
+*.mobileprovision
+
+# Assinatura / provisioning iOS
+**/ios/Runner/GoogleService-Info.plist.local
+**/ios/fastlane/report.xml
+
+# Dumps e exports de dados de cliente
+*.sql
+*.dump
+*_export.json
+/backups/

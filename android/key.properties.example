@@ -1,0 +1,9 @@
+# Modelo de configuracao de assinatura Android.
+# Copie para android/key.properties e preencha com os valores reais.
+# O arquivo real esta no .gitignore - ele NUNCA vai pro repositorio,
+# porque quem tem o keystore consegue publicar apps no seu nome.
+
+storePassword=COLOQUE_A_SENHA_DO_KEYSTORE
+keyPassword=COLOQUE_A_SENHA_DA_CHAVE
+keyAlias=upload
+storeFile=../upload-keystore.jks
