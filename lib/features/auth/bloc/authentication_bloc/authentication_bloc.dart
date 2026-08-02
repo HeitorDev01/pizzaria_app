@@ -13,6 +13,8 @@ class AuthenticationBloc
   final UserRepository _userRepository;
   late final StreamSubscription<MyUser> _userSubscription;
 
+  UserRepository get userRepository => _userRepository;
+
   AuthenticationBloc({required UserRepository userRepository})
       : _userRepository = userRepository,
         super(const AuthenticationState.unknown()) {

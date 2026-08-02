@@ -1,62 +1,59 @@
-import 'package:equatable/equatable.dart';
-import 'package:user_repository/src/entities/entities.dart';
+import '../entities/entities.dart';
 
-/// Usuario como o app o enxerga.
-class MyUser extends Equatable {
+class MyUser {
   final String userId;
-  final String name;
   final String email;
-  final bool hasActivityCart;
+  final String name;
+  final bool hasActiveCart;
 
-  const MyUser({
+  MyUser({
     required this.userId,
-    required this.name,
     required this.email,
-    required this.hasActivityCart,
+    required this.name,
+    required this.hasActiveCart,
   });
 
-  /// Representa "ninguem logado". O AuthenticationBloc compara contra este
-  /// valor, por isso MyUser precisa ser Equatable: comparar por identidade
-  /// falharia para qualquer usuario vazio vindo de outra origem.
-  static const empty = MyUser(
-    userId: '',
-    name: '',
-    email: '',
-    hasActivityCart: false,
-  );
+  static final empty = MyUser(
+		userId: '', 
+		email: '', 
+		name: '',
+    hasActiveCart: false,
+	);
 
   MyUser copyWith({
     String? userId,
-    String? name,
     String? email,
-    bool? hasActivityCart,
+    String? name,
+    bool? hasActiveCart,
   }) {
     return MyUser(
       userId: userId ?? this.userId,
-      name: name ?? this.name,
       email: email ?? this.email,
-      hasActivityCart: hasActivityCart ?? this.hasActivityCart,
+      name: name ?? this.name,
+      hasActiveCart: hasActiveCart ?? this.hasActiveCart,
     );
   }
 
   MyUserEntity toEntity() {
     return MyUserEntity(
-      userId: userId,
+      userId: userId, 
+      email: email, 
       name: name,
-      email: email,
-      hasActivityCart: hasActivityCart,
+      hasActivityCart: hasActiveCart,
     );
   }
 
   static MyUser fromEntity(MyUserEntity entity) {
     return MyUser(
-      userId: entity.userId,
-      name: entity.name,
-      email: entity.email,
-      hasActivityCart: entity.hasActivityCart,
+      userId: entity.userId, 
+      email: entity.email, 
+      name: entity.name, 
+      hasActiveCart: entity.hasActivityCart,
     );
   }
 
   @override
-  List<Object?> get props => [userId, name, email, hasActivityCart];
+  String toString() {
+    return 'MyUser: $userId, $email, $name, $hasActiveCart';
+  }
 }

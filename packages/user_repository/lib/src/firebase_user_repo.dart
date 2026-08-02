@@ -1,59 +1,37 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:user_repository/user_repository.dart';
 
 class FirebaseUserRepo implements UserRepository {
   final FirebaseAuth _firebaseAuth;
-  final CollectionReference<Map<String, dynamic>> _usersCollection;
+	final usersCollection = FirebaseFirestore.instance.collection('users');
 
   FirebaseUserRepo({
     FirebaseAuth? firebaseAuth,
-    FirebaseFirestore? firestore,
-  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _usersCollection =
-            (firestore ?? FirebaseFirestore.instance).collection('users');
-
-  /// Detalhe do erro so em debug: em release a mensagem crua do Firebase vai
-  /// parar no logcat, que outros apps do aparelho conseguem ler.
-  void _logError(Object error) {
-    if (kDebugMode) log(error.toString(), name: 'user_repository');
-  }
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   @override
   Stream<MyUser> get user {
     return _firebaseAuth.authStateChanges().flatMap((firebaseUser) async* {
-      if (firebaseUser == null) {
+      if(firebaseUser == null) {
         yield MyUser.empty;
-        return;
+      } else {
+        yield await usersCollection
+          .doc(firebaseUser.uid)
+          .get()
+          .then((value) => MyUser.fromEntity(MyUserEntity.fromDocument(value.data()!)));
       }
-
-      final doc = await _usersCollection.doc(firebaseUser.uid).get();
-      final data = doc.data();
-
-      // O documento pode nao existir ainda: entre createUser e setUserData ha
-      // uma janela em que o usuario esta autenticado sem perfil no Firestore.
-      yield data == null
-          ? MyUser.empty.copyWith(
-              userId: firebaseUser.uid,
-              email: firebaseUser.email ?? '',
-            )
-          : MyUser.fromEntity(MyUserEntity.fromDocument(data));
     });
   }
 
   @override
   Future<void> signIn(String email, String password) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
-      _logError(e);
+      log(e.toString());
       rethrow;
     }
   }
@@ -61,27 +39,38 @@ class FirebaseUserRepo implements UserRepository {
   @override
   Future<MyUser> signUp(MyUser myUser, String password) async {
     try {
-      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: myUser.email,
-        password: password,
+      UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: myUser.email, 
+        password: password
       );
-      return myUser.copyWith(userId: credential.user!.uid);
+
+      myUser = myUser.copyWith(userId: user.user!.uid);
+      return myUser;
     } catch (e) {
-      _logError(e);
+      log(e.toString());
       rethrow;
     }
   }
 
   @override
-  Future<void> setUserData(MyUser user) async {
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
+
+  @override
+  Future<void> setUserData(MyUser myUser) async {
     try {
-      await _usersCollection.doc(user.userId).set(user.toEntity().toDocument());
+      await usersCollection
+        .doc(myUser.userId)
+        .set(myUser.toEntity().toDocument());
     } catch (e) {
-      _logError(e);
+      log(e.toString());
       rethrow;
     }
   }
 
-  @override
-  Future<void> signOut() => _firebaseAuth.signOut();
+  
+
+  
+  
 }

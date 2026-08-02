@@ -1,12 +1,10 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pizzaria_app/components/my_text_field.dart';
+import 'package:pizzaria_app/features/auth/bloc/sign_up_bloc/sign_up_bloc.dart';
+import 'package:user_repository/user_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pizzaria_app/core/validators/validators.dart';
-import 'package:pizzaria_app/core/widgets/app_text_field.dart';
-import 'package:pizzaria_app/features/auth/bloc/sign_up_bloc/sign_up_bloc.dart';
-import 'package:pizzaria_app/features/auth/widgets/auth_submit_button.dart';
-import 'package:pizzaria_app/features/auth/widgets/password_checklist.dart';
-import 'package:user_repository/user_repository.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,113 +14,264 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+	final passwordController = TextEditingController();
+  final emailController = TextEditingController();
+	final nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _nameController = TextEditingController();
+	IconData iconPassword = CupertinoIcons.eye_fill;
+	bool obscurePassword = true;
+	bool signUpRequired = false;
 
-  bool _obscurePassword = true;
-  PasswordRequirements _requirements = PasswordRequirements.empty;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    if (!_formKey.currentState!.validate()) return;
-
-    final user = MyUser.empty.copyWith(
-      email: _emailController.text.trim(),
-      name: _nameController.text.trim(),
-    );
-
-    context
-        .read<SignUpBloc>()
-        .add(SignUpRequired(user, _passwordController.text));
-  }
+	bool containsUpperCase = false;
+	bool containsLowerCase = false;
+	bool containsNumber = false;
+	bool containsSpecialChar = false;
+	bool contains8Length = false;
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    return BlocConsumer<SignUpBloc, SignUpState>(
-      listener: (context, state) {
-        if (state is SignUpFailure) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(state.message)));
-        }
-      },
-      builder: (context, state) {
-        return Form(
-          key: _formKey,
-          child: Center(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: size.width * 0.9,
-                  child: AppTextField(
-                    controller: _emailController,
-                    hintText: 'E-mail',
-                    keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(CupertinoIcons.mail_solid),
-                    validator: Validators.email,
-                  ),
+    return BlocListener<SignUpBloc, SignUpState>(
+			listener: (context, state) {
+				if(state is SignUpSuccess) {
+					setState(() {
+					  signUpRequired = false;
+					});
+				} else if(state is SignUpProcess) {
+					setState(() {
+					  signUpRequired = true;
+					});
+				} else if(state is SignUpFailure) {
+					return;
+				} 
+			},
+			child: Form(
+        key: _formKey,
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: MyTextField(
+                  controller: emailController,
+                  hintText: 'Email',
+                  obscureText: false,
+                  keyboardType: TextInputType.emailAddress,
+                  prefixIcon: const Icon(CupertinoIcons.mail_solid),
+                  validator: (val) {
+                    if(val!.isEmpty) {
+                      return 'Please fill in this field';													
+                    } else if(!RegExp(r'^[\w-\.]+@([\w-]+.)+[\w-]{2,4}$').hasMatch(val)) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  }
                 ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: size.width * 0.9,
-                  child: AppTextField(
-                    controller: _passwordController,
-                    hintText: 'Senha',
-                    obscureText: _obscurePassword,
-                    keyboardType: TextInputType.visiblePassword,
-                    prefixIcon: const Icon(CupertinoIcons.lock_fill),
-                    validator: Validators.password,
-                    onChanged: (value) => setState(
-                      () => _requirements = PasswordRequirements.of(value),
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () => setState(
-                        () => _obscurePassword = !_obscurePassword,
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: MyTextField(
+                  controller: passwordController,
+                  hintText: 'Password',
+                  obscureText: obscurePassword,
+                  keyboardType: TextInputType.visiblePassword,
+                  prefixIcon: const Icon(CupertinoIcons.lock_fill),
+                  onChanged: (val) {
+                    if(val!.contains(RegExp(r'[A-Z]'))) {
+                      setState(() {
+                        containsUpperCase = true;
+                      });
+                    } else {
+                      setState(() {
+                        containsUpperCase = false;
+                      });
+                    }
+                    if(val.contains(RegExp(r'[a-z]'))) {
+                      setState(() {
+                        containsLowerCase = true;
+                      });
+                    } else {
+                      setState(() {
+                        containsLowerCase = false;
+                      });
+                    }
+                    if(val.contains(RegExp(r'[0-9]'))) {
+                      setState(() {
+                        containsNumber = true;
+                      });
+                    } else {
+                      setState(() {
+                        containsNumber = false;
+                      });
+                    }
+                    if(val.contains(RegExp(r'^(?=.*?[!@#$&*~`)\%\-(_+=;:,.<>/?"[{\]}\|^])'))) {
+                      setState(() {
+                        containsSpecialChar = true;
+                      });
+                    } else {
+                      setState(() {
+                        containsSpecialChar = false;
+                      });
+                    }
+                    if(val.length >= 8) {
+                      setState(() {
+                        contains8Length = true;
+                      });
+                    } else {
+                      setState(() {
+                        contains8Length = false;
+                      });
+                    }
+                    return null;
+                  },
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        obscurePassword = !obscurePassword;
+                        if(obscurePassword) {
+                          iconPassword = CupertinoIcons.eye_fill;
+                        } else {
+                          iconPassword = CupertinoIcons.eye_slash_fill;
+                        }
+                      });
+                    },
+                    icon: Icon(iconPassword),
+                  ),
+                  validator: (val) {
+                    if(val!.isEmpty) {
+                      return 'Please fill in this field';			
+                    } else if(!RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~`)\%\-(_+=;:,.<>/?"[{\]}\|^]).{8,}$').hasMatch(val)) {
+                      return 'Please enter a valid password';
+                    }
+                    return null;
+                  }
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "⚈  1 uppercase",
+                        style: TextStyle(
+                          color: containsUpperCase
+                            ? Colors.green
+                            : Theme.of(context).colorScheme.onBackground
+                        ),
                       ),
-                      icon: Icon(
-                        _obscurePassword
-                            ? CupertinoIcons.eye_fill
-                            : CupertinoIcons.eye_slash_fill,
+                      Text(
+                        "⚈  1 lowercase",
+                        style: TextStyle(
+                          color: containsLowerCase
+                            ? Colors.green
+                            : Theme.of(context).colorScheme.onBackground
+                        ),
                       ),
+                      Text(
+                        "⚈  1 number",
+                        style: TextStyle(
+                          color: containsNumber
+                            ? Colors.green
+                            : Theme.of(context).colorScheme.onBackground
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "⚈  1 special character",
+                        style: TextStyle(
+                          color: containsSpecialChar
+                            ? Colors.green
+                            : Theme.of(context).colorScheme.onBackground
+                        ),
+                      ),
+                      Text(
+                        "⚈  8 minimum character",
+                        style: TextStyle(
+                          color: contains8Length
+                            ? Colors.green
+                            : Theme.of(context).colorScheme.onBackground
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: MyTextField(
+                  controller: nameController,
+                  hintText: 'Name',
+                  obscureText: false,
+                  keyboardType: TextInputType.name,
+                  prefixIcon: const Icon(CupertinoIcons.person_fill),
+                  validator: (val) {
+                    if(val!.isEmpty) {
+                      return 'Please fill in this field';													
+                    } else if(val.length > 30) {
+                      return 'Name too long';
+                    }
+                    return null;
+                  }
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+              !signUpRequired
+                ? SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    child: TextButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          MyUser myUser = MyUser.empty.copyWith(
+                            email: emailController.text,
+                            name: nameController.text
+                          );
+                          setState(() {
+                            context.read<SignUpBloc>().add(
+                              SignUpRequired(
+                                myUser,
+                                passwordController.text
+                              )
+                            );
+                          });																			
+                        }
+                      },
+                      style: TextButton.styleFrom(
+                        elevation: 3.0,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(60)
+                        )
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+                        child: Text(
+                          'Sign Up',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600
+                          ),
+                        ),
+                      )
                     ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                PasswordChecklist(requirements: _requirements),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: size.width * 0.9,
-                  child: AppTextField(
-                    controller: _nameController,
-                    hintText: 'Nome',
-                    keyboardType: TextInputType.name,
-                    prefixIcon: const Icon(CupertinoIcons.person_fill),
-                    validator: Validators.name,
-                  ),
-                ),
-                SizedBox(height: size.height * 0.02),
-                AuthSubmitButton(
-                  label: 'Cadastrar',
-                  isLoading: state is SignUpInProgress,
-                  onPressed: _submit,
-                ),
-              ],
-            ),
+                  )
+                : const CircularProgressIndicator()
+            ],
           ),
-        );
-      },
-    );
+        ),
+      ),
+		);
   }
 }

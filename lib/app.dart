@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pizzaria_app/app/app_view.dart';
+import 'package:pizzaria_app/app_view.dart';
 import 'package:pizzaria_app/features/auth/bloc/authentication_bloc/authentication_bloc.dart';
 import 'package:user_repository/user_repository.dart';
 
@@ -19,7 +19,7 @@ class App extends StatelessWidget {
       value: userRepository,
       child: BlocProvider(
         create: (_) => AuthenticationBloc(userRepository: userRepository),
-        child: const AppView(),
+        child: const MyAppView(),
       ),
     );
   }

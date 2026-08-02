@@ -1,38 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pizzaria_app/features/auth/bloc/sign_in_bloc/sign_in_bloc.dart';
-import 'package:user_repository/user_repository.dart';
+import 'package:flutter/cupertino.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SignInBloc(context.read<UserRepository>()),
-      child: const _HomeView(),
-    );
-  }
-}
-
-class _HomeView extends StatelessWidget {
-  const _HomeView();
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: const Text('Pizza Delivery'),
-        actions: [
+        backgroundColor: Theme.of(context).colorScheme.background,
+        title: Row(
+          children:[
+            Image.asset(
+              'assets/8.png',
+              scale: 14,
+              ),
+              SizedBox(width: 5,),
+            Text(
+              'PIZZA',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 30, 
+              ),
+            ),
+          ]
+        ),
+        actions:[
           IconButton(
-            tooltip: 'Sair',
-            icon: const Icon(Icons.logout),
-            onPressed: () =>
-                context.read<SignInBloc>().add(const SignOutRequired()),
+            onPressed: () {},
+            icon: Icon(CupertinoIcons.arrow_right_to_line),
           ),
-        ],
+        ]
       ),
-      body: const Center(child: Text('Home Screen')),
     );
   }
 }
+
