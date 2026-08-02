@@ -1,26 +1,31 @@
+import 'package:equatable/equatable.dart';
 import 'package:user_repository/src/entities/entities.dart';
 
-class MyUser {
+/// Usuario como o app o enxerga.
+class MyUser extends Equatable {
   final String userId;
   final String name;
   final String email;
   final bool hasActivityCart;
 
-  MyUser({
-    required this.userId, 
-    required this.name, 
-    required this.email, 
-    required this.hasActivityCart, 
-    });
+  const MyUser({
+    required this.userId,
+    required this.name,
+    required this.email,
+    required this.hasActivityCart,
+  });
 
-    static final empty = MyUser(
-      userId: '', 
-      name: '', 
-      email: '', 
-      hasActivityCart: false, 
-      );
+  /// Representa "ninguem logado". O AuthenticationBloc compara contra este
+  /// valor, por isso MyUser precisa ser Equatable: comparar por identidade
+  /// falharia para qualquer usuario vazio vindo de outra origem.
+  static const empty = MyUser(
+    userId: '',
+    name: '',
+    email: '',
+    hasActivityCart: false,
+  );
 
-      MyUser copyWith({
+  MyUser copyWith({
     String? userId,
     String? name,
     String? email,
@@ -33,7 +38,7 @@ class MyUser {
       hasActivityCart: hasActivityCart ?? this.hasActivityCart,
     );
   }
-  
+
   MyUserEntity toEntity() {
     return MyUserEntity(
       userId: userId,
@@ -42,19 +47,16 @@ class MyUser {
       hasActivityCart: hasActivityCart,
     );
   }
-  
+
   static MyUser fromEntity(MyUserEntity entity) {
     return MyUser(
       userId: entity.userId,
       name: entity.name,
       email: entity.email,
-      hasActivityCart: entity.hasActivityCart, 
-
+      hasActivityCart: entity.hasActivityCart,
     );
   }
 
   @override
-  String toString() {
-   return 'MyUser: $userId, $name, $email, $hasActivityCart';
-}
+  List<Object?> get props => [userId, name, email, hasActivityCart];
 }

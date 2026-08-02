@@ -15,7 +15,7 @@
         }
       },
       "dart": {
-        "lib/firebase_options.dart": {
+        "lib/core/config/firebase_options.dart": {
           "projectId": "pizzariapp-90c96",
           "configurations": {
             "android": "1:280495227409:android:758f10ede301b5c53127b0",

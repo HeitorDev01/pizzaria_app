@@ -7,7 +7,7 @@ visivel do que nunca pode, e lista o que precisa ser feito no console.
 
 | Arquivo | Conteudo | Por que e seguro |
 |---|---|---|
-| `lib/firebase_options.dart` | apiKey, appId, projectId | Chave de **cliente**. Vai embutida no APK e no bundle web de qualquer jeito — qualquer pessoa extrai do app instalado. |
+| `lib/core/config/firebase_options.dart` | apiKey, appId, projectId | Chave de **cliente**. Vai embutida no APK e no bundle web de qualquer jeito — qualquer pessoa extrai do app instalado. |
 | `android/app/google-services.json` | mesmo conjunto | Idem. |
 | `firebase.json` | projectId, appIds | Identificadores, nao credenciais. |
 
@@ -71,7 +71,8 @@ neste repositorio.
 
 ## Pendencia conhecida no codigo
 
-`firebase_user_repo.dart` usa `log(e.toString())` nos catch de login e
-cadastro. Em build de release isso joga a mensagem bruta do Firebase Auth
-no logcat, que outros apps do aparelho conseguem ler em alguns cenarios.
-Trocar por uma mensagem generica na UI e manter o detalhe so em debug.
+~~`firebase_user_repo.dart` usa `log(e.toString())` nos catch de login e
+cadastro.~~ **Resolvido.** O log agora passa por `_logError`, que so escreve
+sob `kDebugMode`; em release nada e emitido. Na UI, `SignInBloc` mostra
+sempre `E-mail ou senha invalidos`, sem distinguir e-mail inexistente de
+senha errada — a mesma protecao contra enumeracao pedida no checklist acima.
