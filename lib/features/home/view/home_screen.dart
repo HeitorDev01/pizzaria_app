@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pizzaria_app/features/auth/bloc/sign_in_bloc/sign_in_bloc.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -17,7 +19,7 @@ class HomeScreen extends StatelessWidget {
               'assets/8.png',
               scale: 14,
               ),
-              SizedBox(width: 5,),
+              SizedBox(width: 8,),
             Text(
               'PIZZA',
               style: TextStyle(
@@ -29,11 +31,74 @@ class HomeScreen extends StatelessWidget {
         ),
         actions:[
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+
+            },
+            icon: Icon(CupertinoIcons.cart),
+          ),
+          IconButton(
+            onPressed: () {
+              context.read<SignInBloc>().add(SignOutRequired());
+            },
             icon: Icon(CupertinoIcons.arrow_right_to_line),
           ),
         ]
       ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 9/16,
+          ),
+          itemCount: 8,
+          itemBuilder: (context, int i ) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300,
+                    offset: Offset(3, 3),
+                    blurRadius: 5,
+                  )
+                ]
+              ),
+              child:Column(
+                children: [
+                  Image.asset(
+                    'assets/1.png',
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical:4, horizontal: 8),
+                          child: Text(
+                          "NOM-VEG",
+                          style: TextStyle(
+                            color:Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          )
+                          ),
+                        )
+                      ),
+                    ]
+                  )
+                ]
+              )
+            );
+          }
+        ),
+      )
     );
   }
 }
