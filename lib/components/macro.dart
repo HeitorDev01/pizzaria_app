@@ -1,8 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
  class MyMacroWidget extends StatelessWidget {
-  const MyMacroWidget({super.key});
+  final String title;
+  final int value;
+  final FaIconData icon;
+
+  const MyMacroWidget({
+   super.key,
+   required this.title,
+   required this.value,
+   required this.icon
+ });
 
   @override
   Widget build(BuildContext context) {
@@ -10,25 +20,27 @@ import 'package:flutter/material.dart';
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
                               BoxShadow(
-                                color: Colors.grey,
+                                color: Colors.grey.shade400,
                                 blurRadius: 5,
-                                offset: Offset(2, 2),
+                                offset: const Offset(2, 2),
                               ),
                             ],
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
-                              children:[
-                              Icon(
-                                CupertinoIcons.airplane,
-                                color: Colors.redAccent,
-                                ),
+                              children: [
+                              FaIcon(
+                                icon,
+                                color: Colors.redAccent,),
+                              const SizedBox(height: 4),
                               Text(
-                                '467 Calories',
+                                title == "Calories"
+                                    ? '$value $title'
+                                    : '${value}g $title',
                                 style: TextStyle(
                                   fontSize: 10,
                                 ),

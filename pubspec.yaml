@@ -31,7 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  font_awesome_flutter: ^11.0.0
   firebase_core: ^4.10.0
     
   bloc: ^9.2.1
@@ -40,6 +39,7 @@ dependencies:
 
 
   cupertino_icons: ^1.0.8
+  font_awesome_flutter: ^11.0.0
 
   pizza_repository:
     path: packages/pizza_repository

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pizzaria_app/components/macro.dart';
 
 class DetailsScreen extends StatelessWidget {
@@ -99,15 +100,48 @@ class DetailsScreen extends StatelessWidget {
                   SizedBox(height: 12,),
                   Row(
                     children: [
-                      MyMacroWidget(),
+                      MyMacroWidget(
+                        title: "Calories",
+                        value: 267,
+                       icon: FontAwesomeIcons.fire,
+                      ),
                       SizedBox(width: 10,),
-                      MyMacroWidget(),
+                      MyMacroWidget(
+                        title: "Protein",
+                        value: 36,
+                        icon: FontAwesomeIcons.dumbbell,
+                      ),
                       SizedBox(width: 10,),
-                      MyMacroWidget(),
+                      MyMacroWidget(
+                        title: "Fat",
+                        value: 267,
+                        icon: FontAwesomeIcons.oilWell,
+                      ),
                       SizedBox(width: 10,),
-                      MyMacroWidget(),
+                      MyMacroWidget(
+                        title: "Carbs",
+                        value: 267,
+                        icon: FontAwesomeIcons.breadSlice,
+                      ),
                   ],
                   ),
+                  const SizedBox(height: 12,),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    child: TextButton( 
+                      onPressed: () {
+                        // Add your onPressed logic here
+                      },
+                      child: Text(
+                        "Buy Now",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      )
+                    )
+                  )
                 ],
                 ),
               ),
