@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pizzaria_app/components/macro.dart';
 
 class DetailsScreen extends StatelessWidget {
   const DetailsScreen ({super.key});
@@ -47,26 +49,68 @@ class DetailsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Column(
-                children: [
-                Row(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
                   children: [
-                    Text('Truffle Temptation Extravaganza',
-                     style: TextStyle(
-                      fontSize: 20, 
-                      fontWeight: FontWeight.bold
-                ),
-                    ),
-                    Text('Truffle Temptation Extravaganza',
-                     style: TextStyle(
-                      fontSize: 20, 
-                      fontWeight: FontWeight.bold
-                ),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,  
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text('Truffle Temptation Extravaganza',
+                         style: TextStyle(
+                          fontSize: 20, 
+                          fontWeight: FontWeight.bold
+                                        ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: 
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                              '\$12,00',
+                               style: TextStyle(
+                                fontSize: 20, 
+                                fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                              ),
+                              ),
+                              Text(
+                              '\$15,00',
+                               style: TextStyle(
+                                fontSize: 16, 
+                                fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough,
+                              ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                  ),
+                  SizedBox(height: 12,),
+                  Row(
+                    children: [
+                      MyMacroWidget(),
+                      SizedBox(width: 10,),
+                      MyMacroWidget(),
+                      SizedBox(width: 10,),
+                      MyMacroWidget(),
+                      SizedBox(width: 10,),
+                      MyMacroWidget(),
+                  ],
+                  ),
                 ],
-                )
-              ],
-              )
+                ),
+              ),
             ),
           ],
         ),
