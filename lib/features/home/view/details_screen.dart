@@ -32,7 +32,7 @@ class DetailsScreen extends StatelessWidget {
                   ),
                 ],
                 image: DecorationImage(
-                  image: AssetImage('assets/1.png'),
+                  image: AssetImage('assets/${pizza.id}.png'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -55,11 +55,12 @@ class DetailsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                   Row(
+                    
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,  
                     children: [
                       Expanded(
                         flex: 2,
-                        child: Text('Truffle Temptation Extravaganza',
+                        child: Text(pizza.name,
                          style: TextStyle(
                           fontSize: 20, 
                           fontWeight: FontWeight.bold
@@ -75,7 +76,7 @@ class DetailsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                              '\$12,00',
+                              '\$${pizza.price}',
                                style: TextStyle(
                                 fontSize: 20, 
                                 fontWeight: FontWeight.bold,
@@ -83,7 +84,7 @@ class DetailsScreen extends StatelessWidget {
                               ),
                               ),
                               Text(
-                              '\$15,00',
+                              '\$${pizza.originalPrice}',
                                style: TextStyle(
                                 fontSize: 16, 
                                 fontWeight: FontWeight.bold,
