@@ -125,7 +125,7 @@ class DetailsScreen extends StatelessWidget {
                       ),
                   ],
                   ),
-                  const SizedBox(height: 12,),
+                  const SizedBox(height: 40,),
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: 50,
@@ -133,11 +133,20 @@ class DetailsScreen extends StatelessWidget {
                       onPressed: () {
                         // Add your onPressed logic here
                       },
+                       style: TextButton.styleFrom(
+                      elevation: 3.0,
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)
+                      )
+                    ),
                       child: Text(
                         "Buy Now",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20,
                           color: Colors.white,
+                          fontWeight: FontWeight.w600,
                         ),
                       )
                     )
