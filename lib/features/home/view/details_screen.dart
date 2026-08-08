@@ -1,21 +1,33 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pizza_repository/pizza_repository.dart';
 import 'package:pizzaria_app/components/macro.dart';
+import 'package:pizzaria_app/features/home/data/pizza_catalog.dart';
+import 'package:pizzaria_app/features/home/widgets/pizza_labels.dart';
 
 class DetailsScreen extends StatelessWidget {
-  const DetailsScreen ({super.key});
+  final Pizza pizza;
+
+  /// Asset resolvido pela home. Quando ausente, cai no `picture` do sabor.
+  final String? picture;
+
+  const DetailsScreen({super.key, required this.pizza, this.picture});
 
   @override
   Widget build(BuildContext context) {
+    final asset = picture ??
+        (pizza.picture.startsWith('assets/')
+            ? pizza.picture
+            : fallbackPizzaPicture);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        title: Text('Details'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: const Text('Details'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
         child: Column(
           children: [
             Container(
@@ -32,12 +44,12 @@ class DetailsScreen extends StatelessWidget {
                   ),
                 ],
                 image: DecorationImage(
-                  image: AssetImage('assets/${pizza.id}.png'),
+                  image: AssetImage(asset),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -53,106 +65,124 @@ class DetailsScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  Row(
-                    
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,  
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Text(pizza.name,
-                         style: TextStyle(
-                          fontSize: 20, 
-                          fontWeight: FontWeight.bold
-                                        ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            pizza.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
+                        Expanded(
+                          flex: 1,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  pizza.formattedPrice,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                                if (pizza.hasDiscount)
+                                  Text(
+                                    pizza.formattedOriginalPrice,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        VegBadge(isVeg: pizza.isVeg),
+                        SpicyBadge(spicy: pizza.spicy),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      pizza.description,
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.4,
+                        color: Colors.grey.shade700,
                       ),
-                      Expanded(
-                        flex: 1,
-                        child: 
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                              '\$${pizza.price}',
-                               style: TextStyle(
-                                fontSize: 20, 
-                                fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                              ),
-                              ),
-                              Text(
-                              '\$${pizza.originalPrice}',
-                               style: TextStyle(
-                                fontSize: 16, 
-                                fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                              decoration: TextDecoration.lineThrough,
-                              ),
-                              ),
-                            ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        MyMacroWidget(
+                          title: 'Calories',
+                          value: pizza.macros.calories,
+                          icon: FontAwesomeIcons.fire,
+                        ),
+                        const SizedBox(width: 10),
+                        MyMacroWidget(
+                          title: 'Protein',
+                          value: pizza.macros.proteins,
+                          icon: FontAwesomeIcons.dumbbell,
+                        ),
+                        const SizedBox(width: 10),
+                        MyMacroWidget(
+                          title: 'Fat',
+                          value: pizza.macros.fat,
+                          icon: FontAwesomeIcons.oilWell,
+                        ),
+                        const SizedBox(width: 10),
+                        MyMacroWidget(
+                          title: 'Carbs',
+                          value: pizza.macros.carbs,
+                          icon: FontAwesomeIcons.breadSlice,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 50,
+                      child: TextButton(
+                        onPressed: () {},
+                        style: TextButton.styleFrom(
+                          elevation: 3.0,
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          'Buy Now',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                  ],
-                  ),
-                  SizedBox(height: 12,),
-                  Row(
-                    children: [
-                      MyMacroWidget(
-                        title: "Calories",
-                        value: 267,
-                       icon: FontAwesomeIcons.fire,
-                      ),
-                      SizedBox(width: 10,),
-                      MyMacroWidget(
-                        title: "Protein",
-                        value: 36,
-                        icon: FontAwesomeIcons.dumbbell,
-                      ),
-                      SizedBox(width: 10,),
-                      MyMacroWidget(
-                        title: "Fat",
-                        value: 267,
-                        icon: FontAwesomeIcons.oilWell,
-                      ),
-                      SizedBox(width: 10,),
-                      MyMacroWidget(
-                        title: "Carbs",
-                        value: 267,
-                        icon: FontAwesomeIcons.breadSlice,
-                      ),
-                  ],
-                  ),
-                  const SizedBox(height: 40,),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: TextButton( 
-                      onPressed: () {
-                        // Add your onPressed logic here
-                      },
-                       style: TextButton.styleFrom(
-                      elevation: 3.0,
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
-                      )
                     ),
-                      child: Text(
-                        "Buy Now",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    )
-                  )
-                ],
+                  ],
                 ),
               ),
             ),

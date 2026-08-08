@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:user_repository/user_repository.dart';
@@ -15,8 +17,14 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         MyUser myUser = await _userRepository.signUp(event.user, event.password);
         await _userRepository.setUserData(myUser);
         emit(SignUpSuccess());
+      } on AuthFailure catch (e) {
+        emit(SignUpFailure(e.message));
       } catch (e) {
-        emit(SignUpFailure());
+        log('Falha no cadastro: $e');
+        // A conta no Auth pode ter sido criada e so a gravacao do perfil ter
+        // falhado. O stream de autenticacao ja monta o usuario a partir do
+        // Auth, entao o app continua utilizavel.
+        emit(const SignUpFailure());
       }
     });
   }

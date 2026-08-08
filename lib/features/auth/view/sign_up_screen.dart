@@ -41,8 +41,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
 					  signUpRequired = true;
 					});
 				} else if(state is SignUpFailure) {
-					return;
-				} 
+					// Sem desligar o signUpRequired aqui, o botao vira um
+					// CircularProgressIndicator eterno e o usuario nao descobre
+					// que o cadastro falhou nem consegue tentar de novo.
+					setState(() {
+					  signUpRequired = false;
+					});
+					ScaffoldMessenger.of(context)
+						..hideCurrentSnackBar()
+						..showSnackBar(
+							SnackBar(
+								content: Text(state.message),
+								backgroundColor: Theme.of(context).colorScheme.error,
+							),
+						);
+				}
 			},
 			child: Form(
         key: _formKey,
@@ -161,7 +174,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         style: TextStyle(
                           color: containsUpperCase
                             ? Colors.green
-                            : Theme.of(context).colorScheme.onBackground
+                            : Theme.of(context).colorScheme.onSurface
                         ),
                       ),
                       Text(
@@ -169,7 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         style: TextStyle(
                           color: containsLowerCase
                             ? Colors.green
-                            : Theme.of(context).colorScheme.onBackground
+                            : Theme.of(context).colorScheme.onSurface
                         ),
                       ),
                       Text(
@@ -177,7 +190,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         style: TextStyle(
                           color: containsNumber
                             ? Colors.green
-                            : Theme.of(context).colorScheme.onBackground
+                            : Theme.of(context).colorScheme.onSurface
                         ),
                       ),
                     ],
@@ -190,7 +203,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         style: TextStyle(
                           color: containsSpecialChar
                             ? Colors.green
-                            : Theme.of(context).colorScheme.onBackground
+                            : Theme.of(context).colorScheme.onSurface
                         ),
                       ),
                       Text(
@@ -198,7 +211,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         style: TextStyle(
                           color: contains8Length
                             ? Colors.green
-                            : Theme.of(context).colorScheme.onBackground
+                            : Theme.of(context).colorScheme.onSurface
                         ),
                       ),
                     ],
@@ -231,9 +244,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: TextButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          // O e-mail vai trimado: a regra do Firestore exige
+                          // que ele bata exatamente com o do token de auth.
                           MyUser myUser = MyUser.empty.copyWith(
-                            email: emailController.text,
-                            name: nameController.text
+                            email: emailController.text.trim(),
+                            name: nameController.text.trim()
                           );
                           setState(() {
                             context.read<SignUpBloc>().add(

@@ -5,7 +5,7 @@ import 'package:pizzaria_app/features/auth/bloc/sign_in_bloc/sign_in_bloc.dart';
 import 'package:pizzaria_app/features/auth/view/welcome_screen.dart';
 import 'package:pizzaria_app/features/home/blocs/get_pizza_bloc/get_pizza_bloc.dart';
 import 'package:pizzaria_app/features/home/view/home_screen.dart';
-import 'package:pizza_repository/src/firebase_pizza_repo.dart';
+import 'package:pizza_repository/pizza_repository.dart';
 
 class MyAppView extends StatelessWidget {
   const MyAppView({super.key});
@@ -17,8 +17,8 @@ class MyAppView extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.light(
-          background: Colors.grey.shade200,
-          onBackground: Colors.black,
+          surface: Colors.grey.shade200,
+          onSurface: Colors.black,
           primary: Colors.blue,
           onPrimary: Colors.white,
         ),
@@ -38,12 +38,7 @@ class MyAppView extends StatelessWidget {
                       GetPizzaBloc(FirebasePizzaRepo())..add(GetPizza()),
                 ),
               ],
-              child: BlocProvider(
-                create: (context) => SignInBloc(
-                   context.read<AuthenticationBloc>().userRepository,  
-                ),
-                child: const HomeScreen(),
-              ),
+              child: const HomeScreen(),
             );
           } else {
             return const WelcomeScreen();

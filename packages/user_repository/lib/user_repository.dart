@@ -1,3 +1,4 @@
+export 'src/auth_failure.dart';
 export 'src/entities/entities.dart';
 export 'src/firebase_user_repo.dart';
 export 'src/models/models.dart';

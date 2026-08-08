@@ -10,5 +10,14 @@ sealed class SignUpState extends Equatable {
 final class SignUpInitial extends SignUpState {}
 
 class SignUpSuccess extends SignUpState {}
-class SignUpFailure extends SignUpState {}
+
+class SignUpFailure extends SignUpState {
+  final String message;
+
+  const SignUpFailure([this.message = 'Nao foi possivel criar a conta']);
+
+  @override
+  List<Object> get props => [message];
+}
+
 class SignUpProcess extends SignUpState {}
